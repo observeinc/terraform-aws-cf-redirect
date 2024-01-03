@@ -1,3 +1,15 @@
+# AWS Cloudfront Redirect
+
+This project sets up a redirect using AWS Cloudfront.
+
+### Advantages
+- *Very* cheap, uses only CF Functions, can cost pennies for a moderate trafficked site
+- SSL support and automated renewals with ACM
+- No external dependencies
+
+## How to use
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -10,7 +22,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.16.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
 
 ## Modules
@@ -33,7 +45,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_desination"></a> [desination](#input\_desination) | redirect destination. Entire URL, eg https://google.com | `string` | n/a | yes |
+| <a name="input_custom_cf_function"></a> [custom\_cf\_function](#input\_custom\_cf\_function) | Specify a custom function to use for the Cloudfront function. If blank, the default will be used | `string` | `""` | no |
+| <a name="input_destination"></a> [destination](#input\_destination) | redirect destination. Entire URL, eg https://google.com | `string` | n/a | yes |
 | <a name="input_domain"></a> [domain](#input\_domain) | Fully qualified domain to redirect from. | `string` | n/a | yes |
 | <a name="input_is_static_redirect"></a> [is\_static\_redirect](#input\_is\_static\_redirect) | If this is enabled, the path will not be passed with the redirect. | `bool` | `false` | no |
 | <a name="input_route53_zone_id"></a> [route53\_zone\_id](#input\_route53\_zone\_id) | ID of the Route53 DNS zone. | `string` | n/a | yes |
