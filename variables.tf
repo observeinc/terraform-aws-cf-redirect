@@ -3,7 +3,7 @@ variable "domain" {
     description = "Fully qualified domain to redirect from."
 }
 
-variable "desination" {
+variable "destination" {
     type = string
     description = "redirect destination. Entire URL, eg https://google.com"
 }
@@ -17,4 +17,10 @@ variable "is_static_redirect" {
   type = bool
   default = false
   description = "If this is enabled, the path will not be passed with the redirect."
+}
+
+variable "custom_cf_function" {
+  type = string
+  default = ""
+  description = "Specify a custom function to use for the Cloudfront function. If blank, the default will be used"
 }

@@ -3,9 +3,11 @@
 ################################################################################
 
 locals {
-  cloudfront_function      = file("${path.module}/cloudfront_function.js")                       #grab the file locally
-  cloudfront_functionV1 = replace(local.cloudfront_function, "{destination}", var.desination) #define the var destination
-  cloudfront_function_code = var.is_static_redirect ? cloudfront_functionV1 : 
+  cf_function_path      = format("%s/%s", path.module, coalesce(var.custom_cf_function, "cloudfront_function.js"))       # If var.custom_cf_function is empty, use the default cloudfront_function.js
+  cloudfront_function   = file(local.cf_function_path)                                                                   # Grab the cloudfront function
+  cloudfront_functionV1 = replace(local.cloudfront_function, "{destination}", var.destination)                           # Define the var destination, where the redirect should go.
+  cloudfront_functionV2 = replace(local.cloudfront_functionV1, "{is_static_redirect}", tostring(var.is_static_redirect)) # Define the var isStaticRedirect, if we keep the path when redirecting.
+  cloudfront_comment    = substr("CloudFront distribution for redirecting ${var.domain} to ${var.destination}.", 0, 128) # Comments can only be 128 chars long
 }
 
 resource "aws_cloudfront_distribution" "main" {
@@ -24,11 +26,11 @@ resource "aws_cloudfront_distribution" "main" {
 
   enabled         = true
   is_ipv6_enabled = true
-  comment         = "CloudFront distribution for redirecting ${var.domain} to ${var.desination}."
+  comment         = local.cloudfront_comment
   aliases         = [var.domain]
 
   default_cache_behavior {
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods        = ["HEAD", "GET", "OPTIONS"]
     cached_methods         = ["HEAD", "GET", "OPTIONS"]
     target_origin_id       = "dummy"
     viewer_protocol_policy = "allow-all"
@@ -39,11 +41,9 @@ resource "aws_cloudfront_distribution" "main" {
 
 
     forwarded_values {
-      // Forward the protocol header so we can redirect using the same protocol
-      headers = ["CloudFront-Forwarded-Proto"]
-      // If it's not a static redirect, forward the query string so we can 
-      // include it in the redirected URL
-      query_string = !var.is_static_redirect
+      # Forward the protocol header so we can redirect using the same protocol
+      headers      = ["CloudFront-Forwarded-Proto"]
+      query_string = true
       cookies {
         forward = "none"
       }
@@ -67,13 +67,13 @@ resource "aws_cloudfront_distribution" "main" {
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
-  depends_on = [ aws_cloudfront_function.redirect ]
+  depends_on = [aws_cloudfront_function.redirect]
 }
 
 resource "random_string" "aws_cloudfront_function_id" {
-  length           = 8
-  special          = false
-  lower = false
+  length  = 8
+  special = false
+  lower   = false
 }
 
 resource "aws_cloudfront_function" "redirect" {
@@ -81,7 +81,7 @@ resource "aws_cloudfront_function" "redirect" {
   runtime = "cloudfront-js-1.0"
   comment = "Redirect all requests"
   publish = true
-  code    = local.cloudfront_function_code
+  code    = local.cloudfront_functionV2
 }
 
 ################################################################################
