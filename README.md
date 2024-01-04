@@ -1,11 +1,15 @@
 # AWS Cloudfront Redirect
 
-This project sets up a redirect using AWS Cloudfront.
+Terraform module to setup an HTTP (302) redirect using AWS Cloudfront
 
 ### Advantages
 - *Very* cheap, uses only CF Functions, can cost pennies for a moderate trafficked site
 - SSL support and automated renewals with ACM
 - No external dependencies
+
+### Requirements
+1. AWS account with admin access to Route53 and Cloudfront
+2. Public domain, with DNS hosted by a R53 Zone.
 
 ## How to use
 
