@@ -3,11 +3,13 @@
 ################################################################################
 
 locals {
-  cf_function_path      = format("%s/%s", path.module, coalesce(var.custom_cf_function, "cloudfront_function.js"))       # If var.custom_cf_function is empty, use the default cloudfront_function.js
-  cloudfront_function   = file(local.cf_function_path)                                                                   # Grab the cloudfront function
-  cloudfront_functionV1 = replace(local.cloudfront_function, "{destination}", var.destination)                           # Define the var destination, where the redirect should go.
-  cloudfront_functionV2 = replace(local.cloudfront_functionV1, "{is_static_redirect}", tostring(var.is_static_redirect)) # Define the var isStaticRedirect, if we keep the path when redirecting.
-  cloudfront_comment    = substr("CloudFront distribution for redirecting ${var.domain} to ${var.destination}.", 0, 128) # Comments can only be 128 chars long
+  cf_function_path   = format("%s/%s", path.module, coalesce(var.custom_cf_function, "cloudfront_function.js"))       # If var.custom_cf_function is empty, use the default cloudfront_function.js
+  cloudfront_comment = substr("Redirect ${var.domain} to ${var.destination}.", 0, 128) # Comments can only be 128 chars long
+
+  cloudfront_function = templatefile(local.cf_function_path, {
+    destination        = var.destination
+    is_static_redirect = var.is_static_redirect
+  })
 }
 
 resource "aws_cloudfront_distribution" "main" {
@@ -81,7 +83,7 @@ resource "aws_cloudfront_function" "redirect" {
   runtime = "cloudfront-js-1.0"
   comment = "Redirect all requests"
   publish = true
-  code    = local.cloudfront_functionV2
+  code    = local.cloudfront_function
 }
 
 ################################################################################

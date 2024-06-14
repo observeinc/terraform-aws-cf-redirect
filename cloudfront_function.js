@@ -1,8 +1,8 @@
 function handler(event) {
     var request = event.request;
 
-    var destination = "{destination}"; //{destination} is replaced by Terraform
-    var isStaticRedirect = "{is_static_redirect}"; //{is_static_redirect} is replaced by Terraform
+    var destination = "${destination}"; //${destination} is replaced by Terraform
+    var isStaticRedirect = Boolean("${is_static_redirect}"); //${is_static_redirect} is replaced by Terraform
 
     if (isStaticRedirect) { //Add the request uri unless it's a static redirect
         var locationHeader = destination;
