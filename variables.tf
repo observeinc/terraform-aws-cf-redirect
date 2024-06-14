@@ -22,5 +22,5 @@ variable "is_static_redirect" {
 variable "custom_cf_function" {
   type = string
   default = ""
-  description = "Specify a custom function to use for the Cloudfront function. If blank, the default will be used"
+  description = "Specify a custom function to use for the Cloudfront function. If blank, the default will be used. Example: cloudfront_custom_function.js"
 }
