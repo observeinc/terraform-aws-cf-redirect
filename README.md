@@ -96,7 +96,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_custom_cf_function"></a> [custom\_cf\_function](#input\_custom\_cf\_function) | Specify a custom function to use for the Cloudfront function. If blank, the default will be used | `string` | `""` | no |
+| <a name="input_custom_cf_function"></a> [custom\_cf\_function](#input\_custom\_cf\_function) | Specify a custom function to use for the Cloudfront function. If blank, the default will be used. Example: cloudfront\_custom\_function.js | `string` | `""` | no |
 | <a name="input_destination"></a> [destination](#input\_destination) | redirect destination. Entire URL, eg https://google.com | `string` | n/a | yes |
 | <a name="input_domain"></a> [domain](#input\_domain) | Fully qualified domain to redirect from. | `string` | n/a | yes |
 | <a name="input_is_static_redirect"></a> [is\_static\_redirect](#input\_is\_static\_redirect) | If this is enabled, the path will not be passed with the redirect. | `bool` | `false` | no |
