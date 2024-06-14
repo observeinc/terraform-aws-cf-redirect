@@ -12,6 +12,53 @@ Terraform module to setup an HTTP (302) redirect using AWS Cloudfront
 2. Public domain, with DNS hosted by a R53 Zone.
 
 ## How to use
+### One redirect
+`main.tf`
+```hcl
+#redirect example.org to example.com
+module "aws-cf-redirect" {
+    source  = "benjaminejarrell/cf-redirect/aws"
+    version = "1.0.0"
+    destination = "https://example.com"
+    domain = "domain.org"
+    route53_zone_id = "XXXXXXX"
+}
+```
+
+### List of redirects
+`main.tf`
+```hcl
+module "aws-cf-redirect" {
+    source  = "benjaminejarrell/cf-redirect/aws"
+    version = "1.0.0"
+
+    for_each = {
+        for index, redirect in var.redirects :
+        redirect.domain => redirect
+    }
+
+    route53_zone_id    = each.value.route53_zone_id
+    domain             = each.value.domain
+    destination        = each.value.destination
+    is_static_redirect = each.value.is_static_redirect
+    custom_cf_function = each.value.custom_cf_function
+}
+```
+
+`variables.tf`
+```hcl
+variable "redirects" {
+  type = list(object({
+    domain             = string,
+    destination        = string,
+    route53_zone_id    = string,
+    is_static_redirect = bool,
+    custom_cf_function = string
+  }))
+  description = "List of redirects to create."
+}
+```
+
 
 
 <!-- BEGIN_TF_DOCS -->
