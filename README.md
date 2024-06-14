@@ -41,7 +41,7 @@ module "aws-cf-redirect" {
     domain             = each.value.domain
     destination        = each.value.destination
     is_static_redirect = each.value.is_static_redirect
-    custom_cf_function = each.value.custom_cf_function
+    custom_cf_function = each.value.custom_cf_function ? "" : file(each.value.custom_cf_function)
 }
 ```
 

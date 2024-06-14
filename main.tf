@@ -3,13 +3,14 @@
 ################################################################################
 
 locals {
-  cf_function_path   = format("%s/%s", path.module, coalesce(var.custom_cf_function, "cloudfront_function.js"))       # If var.custom_cf_function is empty, use the default cloudfront_function.js
   cloudfront_comment = substr("Redirect ${var.domain} to ${var.destination}.", 0, 128) # Comments can only be 128 chars long
 
-  cloudfront_function = templatefile(local.cf_function_path, {
+  cloudfront_function_template = templatefile("${path.module}/cloudfront_function.js", {
     destination        = var.destination
     is_static_redirect = var.is_static_redirect
   })
+
+  cloudfront_function = coalesce(var.custom_cf_function, local.cloudfront_function_template)
 }
 
 resource "aws_cloudfront_distribution" "main" {
