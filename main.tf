@@ -82,7 +82,7 @@ resource "random_string" "aws_cloudfront_function_id" {
 resource "aws_cloudfront_function" "redirect" {
   name    = "redirect_${random_string.aws_cloudfront_function_id.result}"
   runtime = "cloudfront-js-1.0"
-  comment = "Redirect all requests"
+  comment = substr("Redirect ${var.domain} to ${var.destination}.", 0, 128) # Comments can only be 128 chars long
   publish = true
   code    = local.cloudfront_function
 }
