@@ -17,8 +17,7 @@ Terraform module to setup an HTTP (302) redirect using AWS Cloudfront
 ```hcl
 #redirect example.org to example.com
 module "aws-cf-redirect" {
-    source  = "benjaminejarrell/cf-redirect/aws"
-    version = "1.0.0"
+    source = "git@github.com:observeinc/terraform-aws-cf-redirect.git?ref=v1.3.0"
     destination = "https://example.com"
     domain = "domain.org"
     route53_zone_id = "XXXXXXX"
@@ -29,8 +28,7 @@ module "aws-cf-redirect" {
 `main.tf`
 ```hcl
 module "aws-cf-redirect" {
-    source  = "benjaminejarrell/cf-redirect/aws"
-    version = "1.0.0"
+    source = "git@github.com:observeinc/terraform-aws-cf-redirect.git?ref=v1.3.0"
 
     for_each = {
         for index, redirect in var.redirects :

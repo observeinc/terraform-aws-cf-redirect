@@ -23,19 +23,18 @@ resource "aws_cloudfront_distribution" "main" {
       origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }
-    domain_name = "dummy.test"
-    origin_id   = "dummy"
+    domain_name = var.domain
+    origin_id   = var.domain
   }
 
   enabled         = true
-  is_ipv6_enabled = true
   comment         = local.cloudfront_comment
   aliases         = [var.domain]
 
   default_cache_behavior {
     allowed_methods        = ["HEAD", "GET", "OPTIONS"]
     cached_methods         = ["HEAD", "GET", "OPTIONS"]
-    target_origin_id       = "dummy"
+    target_origin_id       = var.domain
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 3600
@@ -108,19 +107,6 @@ resource "aws_route53_record" "cloudfront" {
   zone_id         = var.route53_zone_id
   name            = var.domain
   type            = "A"
-  allow_overwrite = false
-
-  alias {
-    name                   = aws_cloudfront_distribution.main.domain_name
-    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "cloudfront_ipv6" {
-  zone_id         = var.route53_zone_id
-  name            = var.domain
-  type            = "AAAA"
   allow_overwrite = false
 
   alias {
